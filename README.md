@@ -29,13 +29,13 @@ The goal is to make PDF form work straightforward, whether you are handling one 
 
 To use PyPDFForm as a Python library, install the base package with [pip](https://pypi.org/project/PyPDFForm/):
 
-```shell
+```powershell
 pip install PyPDFForm
 ```
 
 To use the CLI, install PyPDFForm with the `cli` extra using [pipx](https://pipx.pypa.io/stable/):
 
-```shell
+```powershell
 pipx install "PyPDFForm[cli]"
 ```
 
