@@ -25,21 +25,28 @@ if __name__ == "__main__":
         "Authorization": f"Bearer {token}",
     }
 
-    issues = json.loads(
-        requests.get(
-            "https://api.github.com/repos/chinapandaman/PyPDFForm/issues",
-            headers=headers,
-        ).content
+    resp = requests.get(
+        "https://api.github.com/repos/chinapandaman/PyPDFForm/issues",
+        headers=headers,
+        timeout=30,
     )
+    resp.raise_for_status()
+    issues = resp.json()
 
     to_close = []
     for each in issues:
+        raw_labels = each.get("labels", [])
         labels = []
-        if isinstance(each.get("labels"), list):
-            labels = [label["name"] for label in each["labels"]]
-        comments = json.loads(
-            requests.get(each["comments_url"], headers=headers).content
-        )
+        for label in raw_labels:
+            if isinstance(label, dict):
+                labels.append(label.get("name"))
+            elif isinstance(label, str):
+                labels.append(label)
+
+        comments_resp = requests.get(each["comments_url"], headers=headers, timeout=30)
+        comments_resp.raise_for_status()
+        comments = comments_resp.json()
+
         if (
             comments
             and (
@@ -56,5 +63,6 @@ if __name__ == "__main__":
             f"{each}/comments",
             headers=headers,
             json={"body": "Closing due to inactivity."},
+            timeout=30,
         )
-        requests.patch(each, headers=headers, json={"state": "closed"})
+        requests.patch(each, headers=headers, json={"state": "closed"}, timeout=30)
