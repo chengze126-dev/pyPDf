@@ -34,7 +34,9 @@ if __name__ == "__main__":
 
     to_close = []
     for each in issues:
-        labels = [label["name"] for label in each["labels"]]
+        labels = []
+        if isinstance(each.get("labels"), list):
+            labels = [label["name"] for label in each["labels"]]
         comments = json.loads(
             requests.get(each["comments_url"], headers=headers).content
         )
